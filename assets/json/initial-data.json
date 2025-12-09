@@ -1,0 +1,13 @@
+{
+    "ambulances": [
+        { "id": 1, "matricule": "A-001", "modele": "Mercedes Sprinter", "statut": "Disponible", "capacite": 4, "annee": 2020 },
+        { "id": 2, "matricule": "B-042", "modele": "Renault Master", "statut": "En Intervention", "capacite": 3, "annee": 2018 }
+    ],
+    "chauffeurs": [
+        { "id": 101, "nom": "Dupont", "prenom": "Jean", "statut": "Actif" },
+        { "id": 102, "nom": "Martin", "prenom": "Sophie", "statut": "En Pause" }
+    ],
+    "interventions": [],
+    "hopitaux": [],
+    "patients": []
+}
