@@ -1,55 +1,142 @@
 (function () {
-    // 1. État global des données (Base de données locale)
-    let state = {
+
+    /* ===================== LANGUAGE ===================== */
+    const dictionary = {
+        fr: {
+            Dashboard: "Dashboard",
+            Ambulances: "Ambulances",
+            Drivers: "Chauffeurs",
+            Incidents: "Incidents",
+            Settings: "Paramètres",
+            Search: "Rechercher...",
+            Edit: "Modifier",
+            Delete: "Supprimer",
+            Save: "Enregistrer",
+            Cancel: "Annuler",
+            Logout: "Déconnexion",
+            ConfirmDel: "Voulez-vous vraiment supprimer cet élément ?",
+            ConfirmLogout: "Voulez-vous vraiment vous déconnecter ?",
+            Added: "Ajouté avec succès !",
+            Theme: "Mode d'affichage"
+        },
+        en: {
+            Dashboard: "Dashboard",
+            Ambulances: "Ambulances",
+            Drivers: "Drivers",
+            Incidents: "Incidents",
+            Settings: "Settings",
+            Search: "Search...",
+            Edit: "Edit",
+            Delete: "Delete",
+            Save: "Save",
+            Cancel: "Cancel",
+            Logout: "Logout",
+            ConfirmDel: "Are you sure you want to delete this item?",
+            ConfirmLogout: "Are you sure you want to logout?",
+            Added: "Successfully added!",
+            Theme: "Display Mode"
+        }
+    };
+
+    let currentLanguage = localStorage.getItem("lang") || "fr";
+    const translate = key => dictionary[currentLanguage][key] || key;
+
+    window.toggleLanguage = function () {
+        currentLanguage = currentLanguage === "fr" ? "en" : "fr";
+        localStorage.setItem("lang", currentLanguage);
+        window.navigateTo(currentPage);
+    };
+
+    /* ===================== STATE ===================== */
+    const savedUsers = JSON.parse(localStorage.getItem("users") || "[]");
+    const allClientRequests = savedUsers.flatMap(u => u.requests || []);
+
+    const state = {
         ambulances: [
-            { id: 'AMB-101', driver: 'Youssef', status: 'active', location: 'Casablanca' },
-            { id: 'AMB-102', driver: 'Fatima', status: 'idle', location: 'Rabat' }
+            { id: "AMB-101", driver: "Youssef", status: "active", location: "Casablanca" },
+            { id: "AMB-102", driver: "Fatima", status: "idle", location: "Rabat" }
         ],
         drivers: [
-            { id: 'DRV-01', name: 'Ahmed Karim', phone: '0612345678', status: 'active' }
+            { id: "DRV-01", name: "Ahmed Karim", phone: "0612345678", status: "active" }
         ],
-        incidents: [
-            { id: 'INC-01', type: 'Accident', severity: 'Haute', status: 'open', location: 'Tanger' }
-        ]
+        incidents: allClientRequests.length
+            ? allClientRequests
+            : [{ id: "INC-01", type: "Accident", status: "open", location: "Tanger" }]
     };
 
-    const main = document.getElementById('mainContent');
+    const mainContent = document.getElementById("mainContent");
+    let currentPage = "Dashboard";
 
-    /* ===================== GESTION DU CALENDRIER (RESTRICTION) ===================== */
-    function initCalendarRestriction() {
-        const datePicker = document.getElementById('datePicker');
-        if (datePicker) {
-            // Récupère la date d'aujourd'hui au format YYYY-MM-DD
-            const today = new Date().toISOString().split('T')[0];
-            
-            // Empêche la sélection de dates futures
-            datePicker.setAttribute('max', today);
-            
-            // Définit la valeur par défaut sur aujourd'hui
-            datePicker.value = today;
-        }
-    }
-
-    /* ===================== NAVIGATION SPA ===================== */
-    window.navigateTo = function(page) {
-        document.querySelectorAll('.nav-link').forEach(l => l.classList.toggle('active', l.dataset.page === page));
-        
-        if (page === 'Dashboard') renderDashboard();
-        else if (page === 'Ambulances') renderTablePage('Ambulances', state.ambulances, ['ID', 'Chauffeur', 'Statut', 'Ville']);
-        else if (page === 'Drivers') renderTablePage('Chauffeurs', state.drivers, ['ID', 'Nom', 'Téléphone', 'Statut']);
-        else if (page === 'Incidents') renderTablePage('Incidents', state.incidents, ['ID', 'Type', 'Gravité', 'Statut', 'Ville']);
-        else if (page === 'Settings') renderSettings();
+    /* ===================== CUSTOM ALERTS & TOASTS ===================== */
+    window.showToast = function(message, type = "success") {
+        const toast = document.createElement("div");
+        toast.style.cssText = `
+            position: fixed; bottom: 20px; right: 20px; padding: 12px 25px; 
+            background: ${type === "success" ? "#16a34a" : "#dc2626"}; 
+            color: white; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 10000; animation: slideIn 0.3s ease-out;
+        `;
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
     };
 
-    /* ===================== RENDU DASHBOARD ===================== */
+    const style = document.createElement('style');
+    style.innerHTML = `
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        .modal-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); display:flex; align-items:center; justify-content:center; z-index:10000; }
+        .modal-box { background: var(--card-bg); color: var(--text-main); padding:25px; border-radius:12px; width:340px; text-align:center; box-shadow: 0 10px 25px rgba(0,0,0,0.2); border: 1px solid var(--border-color); }
+    `;
+    document.head.appendChild(style);
+
+    /* ===================== THEME LOGIC ===================== */
+    window.setTheme = function (mode) {
+        document.body.dataset.theme = mode;
+        localStorage.setItem("theme", mode);
+        showToast(`Mode ${mode} activé`);
+    };
+
+    /* ===================== LOGOUT LOGIC ===================== */
+    window.logoutAdmin = function() {
+        const modal = document.createElement("div");
+        modal.className = "modal-overlay";
+        modal.innerHTML = `
+            <div class="modal-box">
+                <div style="color:#dc2626; font-size:40px; margin-bottom:10px;">🚪</div>
+                <h3 style="margin:0 0 15px 0;">${translate("Logout")}</h3>
+                <p style="color:var(--text-muted); font-size:14px; margin-bottom:20px;">${translate("ConfirmLogout")}</p>
+                <div style="display:flex; gap:10px;">
+                    <button id="doLogout" class="btn-save" style="flex:1; background:#dc2626;">${translate("Logout")}</button>
+                    <button id="noLogout" class="btn-select" style="flex:1;">${translate("Cancel")}</button>
+                </div>
+            </div>`;
+        document.body.appendChild(modal);
+        modal.querySelector("#noLogout").onclick = () => modal.remove();
+        modal.querySelector("#doLogout").onclick = () => {
+            window.location.href = "../client/index.html";
+        };
+    };
+
+    /* ===================== NAVIGATION ===================== */
+    window.navigateTo = function (page) {
+        currentPage = page;
+        document.querySelectorAll(".nav-link").forEach(link => link.classList.toggle("active", link.dataset.page === page));
+
+        if (page === "Dashboard") renderDashboard();
+        else if (page === "Ambulances") renderTable("Ambulances", state.ambulances, ["id", "driver", "status", "location"]);
+        else if (page === "Drivers") renderTable("Drivers", state.drivers, ["id", "name", "phone", "status"]);
+        else if (page === "Incidents") renderTable("Incidents", state.incidents, ["id", "type", "status", "location"]);
+        else if (page === "Settings") renderSettings();
+    };
+
+    /* ===================== DASHBOARD ===================== */
     function renderDashboard() {
-        main.innerHTML = `
+        mainContent.innerHTML = `
             <div class="stats">
-                <div class="card"><h3>${state.ambulances.length}</h3><p>Ambulances</p></div>
-                <div class="card"><h3>${state.drivers.length}</h3><p>Chauffeurs</p></div>
-                <div class="card" style="border-left:5px solid #dc2626"><h3>${state.incidents.length}</h3><p>Incidents</p></div>
+                <div class="card"><h3>${state.ambulances.length}</h3><p>${translate("Ambulances")}</p></div>
+                <div class="card"><h3>${state.drivers.length}</h3><p>${translate("Drivers")}</p></div>
+                <div class="card" style="border-left:5px solid #dc2626"><h3>${state.incidents.length}</h3><p>${translate("Incidents")}</p></div>
             </div>
-
             <div class="dashboard-grid">
                 <div class="card">
                     <h3>📈 Activité Hebdomadaire</h3>
@@ -60,113 +147,140 @@
                         <div class="bar" style="height:90%"><span>22</span><label>Jeu</label></div>
                     </div>
                 </div>
-
                 <div class="card">
-                    <h3>➕ Ajouter Rapide</h3>
                     <div style="display:flex; gap:8px; margin-bottom:15px;">
-                        <button class="btn-select" onclick="setupForm('ambulance')">Amb</button>
-                        <button class="btn-select" onclick="setupForm('driver')">Chauff</button>
-                        <button class="btn-select" onclick="setupForm('incident')">Incid</button>
+                        <button class="btn-select" onclick="setupQuickForm('ambulance')">Amb</button>
+                        <button class="btn-select" onclick="setupQuickForm('driver')">Chauff</button>
+                        <button class="btn-select" onclick="setupQuickForm('incident')">Incid</button>
                     </div>
-                    <form id="dynForm" class="data-form" onsubmit="handleDataAdd(event)">
-                        <h4 id="fTitle">Saisie</h4>
-                        <div id="fInputs"></div>
-                        <button type="submit" class="btn-save">Enregistrer</button>
+                    <form id="quickForm" class="data-form" style="display:none;" onsubmit="handleQuickAdd(event)">
+                        <h4 id="formTitle">Saisie</h4>
+                        <div id="formInputs"></div>
+                        <button type="submit" class="btn-save">${translate("Save")}</button>
                     </form>
                 </div>
             </div>`;
     }
 
-    /* ===================== GESTION DES FORMULAIRES ===================== */
-    window.setupForm = function(type) {
-        const form = document.getElementById('dynForm');
-        const container = document.getElementById('fInputs');
-        form.style.display = 'flex';
+    /* ===================== QUICK ADD ===================== */
+    window.setupQuickForm = function (type) {
+        const form = document.getElementById("quickForm");
+        const inputs = document.getElementById("formInputs");
+        form.style.display = "flex";
         form.dataset.type = type;
-        document.getElementById('fTitle').textContent = "Nouveau: " + type;
-        
-        if(type === 'ambulance') {
-            container.innerHTML = `<input id="v1" placeholder="ID (AMB-001)" required><input id="v2" placeholder="Chauffeur" required><select id="v3"><option value="active">Active</option><option value="idle">Idle</option></select><input id="v4" placeholder="Ville" required>`;
-        } else if(type === 'driver') {
-            container.innerHTML = `<input id="v1" placeholder="ID Chauffeur" required><input id="v2" placeholder="Nom Complet" required><input id="v3" placeholder="Téléphone" required><select id="v4"><option value="active">Disponible</option><option value="idle">Repos</option></select>`;
+        document.getElementById("formTitle").textContent = "Nouveau: " + type.toUpperCase();
+
+        if (type === "ambulance") {
+            inputs.innerHTML = `<input id="f1" placeholder="ID" required><input id="f2" placeholder="Driver" required><select id="f3"><option value="active">Active</option><option value="idle">Idle</option></select><input id="f4" placeholder="City" required>`;
+        } else if (type === "driver") {
+            inputs.innerHTML = `<input id="f1" placeholder="ID" required><input id="f2" placeholder="Nom" required><input id="f3" placeholder="Tél" required><select id="f4"><option value="active">Active</option><option value="idle">Repos</option></select>`;
         } else {
-            container.innerHTML = `<input id="v1" placeholder="Type d'incident" required><select id="v2"><option>Basse</option><option>Moyenne</option><option>Haute</option></select><input id="v3" placeholder="Ville" required><input type="hidden" id="v4" value="open">`;
+            inputs.innerHTML = `<input id="f1" placeholder="Type" required><select id="f2"><option>Low</option><option>Medium</option><option>High</option></select><input id="f3" placeholder="Ville" required><input type="hidden" id="f4" value="open">`;
         }
     };
 
-    window.handleDataAdd = function(e) {
-        e.preventDefault();
-        const type = e.target.dataset.type;
-        const v = [
-            document.getElementById('v1').value, 
-            document.getElementById('v2').value, 
-            document.getElementById('v3').value, 
-            document.getElementById('v4').value
-        ];
-        
-        if(type === 'ambulance') state.ambulances.push({id:v[0], drv:v[1], st:v[2], loc:v[3]});
-        else if(type === 'driver') state.drivers.push({id:v[0], nm:v[1], ph:v[2], st:v[3]});
-        else state.incidents.push({id:'INC-'+Date.now().toString().slice(-3), ty:v[0], sev:v[1], st:v[3], loc:v[2]});
-        
-        toast("Enregistré avec succès !");
-        renderDashboard();
+    window.handleQuickAdd = function (event) {
+        event.preventDefault();
+        const type = event.target.dataset.type;
+        const v = ["f1", "f2", "f3", "f4"].map(id => document.getElementById(id) ? document.getElementById(id).value : "");
+
+        if (type === "ambulance") state.ambulances.push({ id: v[0], driver: v[1], status: v[2], location: v[3] });
+        else if (type === "driver") state.drivers.push({ id: v[0], name: v[1], phone: v[2], status: v[3] });
+        else if (type === "incident") state.incidents.push({ id: "INC-" + Date.now().toString().slice(-4), type: v[0], status: v[3], location: v[2] });
+
+        showToast(translate("Added"), "success");
+        window.navigateTo(type.charAt(0).toUpperCase() + type.slice(1) + (type === "driver" ? "s" : "s"));
     };
 
-    /* ===================== RENDU DES PAGES ET UTILITAIRES ===================== */
-    function renderTablePage(title, data, headers) {
-        main.innerHTML = `
+    /* ===================== TABLE ===================== */
+    function renderTable(title, data, keys) {
+        mainContent.innerHTML = `
             <section class="card">
-                <h2>${title}</h2>
-                <table class="table">
-                    <thead><tr>${headers.map(h=>`<th>${h}</th>`).join('')}</tr></thead>
-                    <tbody>
-                        ${data.map(item=>`
-                            <tr>${Object.values(item).map(val=>`<td>${val==='active'||val==='open'?`<span class="badge active">${val}</span>`:val}</td>`).join('')}</tr>
-                        `).join('')}
-                    </tbody>
-                </table>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                    <h2>${translate(title)}</h2>
+                    <input class="search-input" style="padding:8px; border-radius:5px; border:1px solid var(--border-color); background:var(--bg-color); color:var(--text-main);" placeholder="${translate("Search")}" oninput="filterTable(this.value)">
+                </div>
+                <table class="table"><tbody id="tableBody">${data.map((row, i) => `<tr>${keys.map(k => `<td>${row[k] || ""}</td>`).join("")}<td><button class="btn-select" onclick="editRow('${title}', ${i})">${translate("Edit")}</button><button class="btn-select" style="background:#dc2626; color:white;" onclick="confirmDelete('${title}', ${i})">${translate("Delete")}</button></td></tr>`).join("")}</tbody></table>
             </section>`;
     }
 
+    window.filterTable = (query) => {
+        document.querySelectorAll("#tableBody tr").forEach(row => row.style.display = row.textContent.toLowerCase().includes(query.toLowerCase()) ? "" : "none");
+    };
+
+    /* ===================== CRUD MODALS ===================== */
+    window.confirmDelete = function(type, index) {
+        const modal = document.createElement("div");
+        modal.className = "modal-overlay";
+        modal.innerHTML = `
+            <div class="modal-box">
+                <div style="color:#dc2626; font-size:40px; margin-bottom:10px;">⚠️</div>
+                <h3 style="margin:0 0 15px 0;">${translate("Delete")}</h3>
+                <p style="color:var(--text-muted); font-size:14px; margin-bottom:20px;">${translate("ConfirmDel")}</p>
+                <div style="display:flex; gap:10px;">
+                    <button id="doDelete" class="btn-save" style="flex:1; background:#dc2626;">${translate("Delete")}</button>
+                    <button id="noDelete" class="btn-select" style="flex:1;">${translate("Cancel")}</button>
+                </div>
+            </div>`;
+        document.body.appendChild(modal);
+        modal.querySelector("#noDelete").onclick = () => modal.remove();
+        modal.querySelector("#doDelete").onclick = () => {
+            state[type.toLowerCase()].splice(index, 1);
+            modal.remove();
+            showToast(translate("Delete") + " OK", "error");
+            window.navigateTo(type);
+        };
+    };
+
+    window.editRow = function (type, index) {
+        const record = state[type.toLowerCase()][index];
+        const modal = document.createElement("div");
+        modal.className = "modal-overlay";
+        modal.innerHTML = `
+            <div class="modal-box">
+                <h3>${translate("Edit")}</h3>
+                ${Object.keys(record).map(k => `
+                    <label style="font-size:11px; display:block; text-align:left; margin-top:10px; color:var(--text-muted);">${k.toUpperCase()}</label>
+                    <input style="width:100%; padding:8px; margin-top:4px; background:var(--bg-color); color:var(--text-main); border:1px solid var(--border-color); border-radius:4px;" value="${record[k]}" data-key="${k}">
+                `).join("")}
+                <div style="display:flex; gap:10px; margin-top:20px;">
+                    <button id="saveEdit" class="btn-save" style="flex:1;">${translate("Save")}</button>
+                    <button id="closeEdit" class="btn-select" style="flex:1;">${translate("Cancel")}</button>
+                </div>
+            </div>`;
+        document.body.appendChild(modal);
+        modal.querySelector("#closeEdit").onclick = () => modal.remove();
+        modal.querySelector("#saveEdit").onclick = () => {
+            modal.querySelectorAll("input").forEach(input => record[input.dataset.key] = input.value);
+            modal.remove();
+            showToast(translate("Save") + " OK");
+            window.navigateTo(type);
+        };
+    };
+
+    /* ===================== SETTINGS & INIT ===================== */
     function renderSettings() {
-        main.innerHTML = `
+        mainContent.innerHTML = `
             <section class="card">
-                <h2>⚙️ Paramètres</h2>
-                <p>Thème de l'interface :</p>
-                <div style="margin-top:15px; display:flex; gap:10px;">
-                    <button class="btn-select" onclick="setTheme('light')">☀️ Mode Clair</button>
-                    <button class="btn-select" onclick="setTheme('dark')">🌙 Mode Sombre</button>
+                <h2>${translate("Settings")}</h2>
+                <label style="display:block; margin-bottom:10px; font-weight:600;">${translate("Theme")}</label>
+                <div style="display:flex; gap:10px; margin-bottom:20px;">
+                    <button class="btn-select" onclick="setTheme('light')">☀️ Light</button>
+                    <button class="btn-select" onclick="setTheme('dark')">🌙 Dark</button>
+                </div>
+                <hr style="border:0; border-top:1px solid var(--border-color); margin-bottom:20px;">
+                <button class="btn-select" onclick="toggleLanguage()">🌐 FR / EN</button>
+                <div style="margin-top:30px;">
+                    <button class="btn-save" style="background:#dc2626; width:auto; padding:10px 30px;" onclick="logoutAdmin()">${translate("Logout")}</button>
                 </div>
             </section>`;
     }
 
-    window.setTheme = function(t) { 
-        document.body.dataset.theme = t; 
-        localStorage.setItem('theme', t); 
-        toast("Thème " + t + " appliqué"); 
-    };
+    document.querySelectorAll(".nav-link").forEach(link => link.onclick = () => window.navigateTo(link.dataset.page));
+    
+    // Initial Load
+    const savedTheme = localStorage.getItem("theme") || "light";
+    document.body.dataset.theme = savedTheme;
+    window.navigateTo("Dashboard");
 
-    function toast(m) { 
-        const t=document.createElement('div'); 
-        t.style.cssText="position:fixed;bottom:20px;right:20px;background:#dc2626;color:white;padding:12px 20px;border-radius:10px;box-shadow:0 4px 12px rgba(0,0,0,0.2);z-index:9999;"; 
-        t.textContent=m; 
-        document.body.appendChild(t); 
-        setTimeout(()=>t.remove(), 2500); 
-    }
-
-    /* ===================== INITIALISATION ===================== */
-    document.querySelectorAll('.nav-link').forEach(l => l.addEventListener('click', () => navigateTo(l.dataset.page)));
-    
-    document.getElementById('menuBtn').onclick = () => document.getElementById('sidebar').classList.toggle('hidden');
-    
-    document.getElementById('year').textContent = new Date().getFullYear();
-    
-    // Applique le thème sauvegardé
-    setTheme(localStorage.getItem('theme') || 'light');
-    
-    // Initialise la restriction du calendrier
-    initCalendarRestriction();
-    
-    // Affiche la page par défaut
-    navigateTo('Dashboard');
 })();

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Inscription Client - Allo Ambulance</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header>
+        <h1>🚑 Allo Ambulance</h1>
+        <button class="btn-back" onclick="window.location.href='index.html'">
+            Retour
+        </button>
+    </header>
+
+    <div class="container">
+        <div class="signup-container">
+            <h2>Créer un compte client</h2>
+            <p class="subtitle">Inscrivez-vous gratuitement en 2 minutes</p>
+            
+            <form id="signupForm">
+                <div class="form-group">
+                    <label for="fullName">Nom complet</label>
+                    <input type="text" id="fullName" placeholder="Prénom et Nom" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" placeholder="votre@email.com" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="phone">Téléphone</label>
+                    <input type="tel" id="phone" placeholder="+212 6XX XXX XXX" required>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="password">Mot de passe</label>
+                        <input type="password" id="password" placeholder="Minimum 8 caractères" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirmer</label>
+                        <input type="password" id="confirmPassword" placeholder="Répétez le mot de passe" required>
+                    </div>
+                </div>
+                
+                <div class="terms">
+                    <input type="checkbox" id="terms" required>
+                    <label for="terms">
+                        J'accepte les 
+                        <a href="#">conditions d'utilisation</a> 
+                        et la 
+                        <a href="#">politique de confidentialité</a>
+                    </label>
+                </div>
+
+                
+                
+                <button type="submit" class="btn-signup">
+                    S'inscrire gratuitement
+                </button>
+            </form>
+            
+            <p class="login-link">
+                Déjà inscrit ? 
+                <a href="login.html">Se connecter</a>
+            </p>
+        </div>
+    </div>
+
+    <script src="js/translations.js"></script>
+    <script src="js/language.js"></script>
+    <script src="js/script.js"></script>
+</body>
+</html>

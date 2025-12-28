@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <title>Allo Ambulance</title>
+    <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+    <header class="dashboard-header">
+        <div class="header-left">
+            <h1>🚑 Allo Ambulance</h1>
+            <p class="welcome-message">
+                Bienvenue, <span id="userName">Client</span> !
+            </p>
+        </div>
+
+        <div class="header-right">
+            <select id="languageSelect" class="language-select" onchange="changeLanguage(this.value)">
+                <option value="fr">FR</option>
+                <option value="ar">AR</option>
+                <option value="en">EN</option>
+            </select>
+            <button class="btn-notification" onclick="showNotifications()">
+                🔔 <span class="notification-count">3</span>
+            </button>
+            <button class="btn-logout" onclick="logout()">Déconnexion</button>
+        </div>
+    </header>
+
+    <nav class="dashboard-nav">
+        <button class="nav-btn active" onclick="showSection('home')">
+            🏠 Accueil
+        </button>
+        <button class="nav-btn" onclick="showSection('services')">
+            🚑 Services
+        </button>
+        <button class="nav-btn" onclick="showSection('history')">
+            📜 Historique
+        </button>
+        <button class="nav-btn" onclick="showSection('profile')">
+            👤 Mon Profil
+        </button>
+        <button class="nav-btn" onclick="showSection('contact')">
+            📞 Contact
+        </button>
+    </nav>
+
+    <main class="dashboard-main">
+        <!-- Section Accueil -->
+        <div id="home" class="dashboard-section">
+    <div class="welcome-banner">
+        <h2>🚨 Besoin d'une ambulance ?</h2>
+        <p>Cliquez sur le type de service dont vous avez besoin :</p>
+
+        <div class="emergency-buttons">
+            <button class="btn-emergency" onclick="openRequestForm('urgent')">
+                <span class="icon">🔥</span>
+                <span class="text">URGENCE VITALE</span>
+                <span class="subtext">Intervention immédiate</span>
+            </button>
+
+            <button class="btn-emergency" onclick="openRequestForm('transport')">
+                <span class="icon">🚙</span>
+                <span class="text">TRANSPORT MÉDICAL</span>
+                <span class="subtext">Vers hôpital/clinique</span>
+            </button>
+
+            <button class="btn-emergency" onclick="openRequestForm('doctor')">
+                <span class="icon">👨‍⚕️</span>
+                <span class="text">MÉDECIN À DOMICILE</span>
+                <span class="subtext">Consultation rapide</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Formulaire  pour les Demandes -->
+    <div id="requestModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Demande de Service</h3>
+                <button class="modal-close" onclick="closeRequestForm()">&times;</button>
+            </div>
+            
+            <form id="requestForm">
+                <div id="formContent"></div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn-submit" id="submitBtn">
+                        Envoyer la demande
+                    </button>
+                    <button type="button" class="btn-cancel" onclick="closeRequestForm()">
+                         Annuler
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+            <div class="quick-stats">
+                <div class="stat-card">
+                    <h3>📊 Mes demandes</h3>
+                    <p class="stat-number">5</p>
+                    <p class="stat-label">Demandes totales</p>
+                </div>
+
+                <div class="stat-card">
+                    <h3>✅ Terminées</h3>
+                    <p class="stat-number">3</p>
+                    <p class="stat-label">Services effectués</p>
+                </div>
+
+                <div class="stat-card">
+                    <h3>⏳ En cours</h3>
+                    <p class="stat-number">1</p>
+                    <p class="stat-label">En attente</p>
+                </div>
+            </div>
+
+            
+        </div>
+
+        <!-- Section Services -->
+        <div id="services" class="dashboard-section" style="display: none">
+            <h2>📋 Nos Services</h2>
+
+            <div class="services-grid">
+                <div class="service-detail">
+                    <h3>🚨 Urgence Médicale</h3>
+                    <p class="service-description">
+                        Intervention immédiate en moins de 10 minutes pour les urgences
+                        vitales. Équipe médicale qualifiée et ambulance équipée.
+                    </p>
+                    <div class="service-features">
+                        <span>⚡ Rapidité</span>
+                        <span>👨‍⚕️ Personnel qualifié</span>
+                        <span>🏥 Équipement complet</span>
+                    </div>
+                    <button class="btn-request" onclick="requestService('urgence')">
+                        Demander ce service
+                    </button>
+                </div>
+
+                <div class="service-detail">
+                    <h3>🚙 Transport Médical</h3>
+                    <p class="service-description">
+                        Transport sécurisé vers les hôpitaux, cliniques et centres de
+                        spécialité. Confort assuré et accompagnement médical.
+                    </p>
+                    <div class="service-features">
+                        <span>🛋️ Confortable</span>
+                        <span>⏰ Réservation flexible</span>
+                        <span>👵 Adapté aux personnes âgées</span>
+                    </div>
+                    <button class="btn-request" onclick="requestService('transport')">
+                        Réserver un transport
+                    </button>
+                </div>
+
+                <div class="service-detail">
+                    <h3>👨‍⚕️ Consultation à Domicile</h3>
+                    <p class="service-description">
+                        Médecin à domicile en moins d'1 heure. Diagnostic, prescription et
+                        suivi médical sans vous déplacer.
+                    </p>
+                    <div class="service-features">
+                        <span>🏠 À domicile</span>
+                        <span>⏱️ Rapidité</span>
+                        <span>💊 Prescription possible</span>
+                    </div>
+                    <button class="btn-request" onclick="requestService('consultation')">
+                        Appeler un médecin
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section Historique -->
+<div id="history" class="dashboard-section" style="display: none">
+    <h2>📜 Historique des demandes</h2>
+
+    <!-- Statistiques -->
+    <div class="history-stats">
+        <div class="stat-summary">
+            <div class="icon">📊</div>
+            <div class="count">0</div>
+            <div class="label">Total des demandes</div>
+        </div>
+        
+        <div class="stat-summary">
+            <div class="icon">🔥</div>
+            <div class="count">0</div>
+            <div class="label">Urgences</div>
+        </div>
+        
+        <div class="stat-summary">
+            <div class="icon">🚙</div>
+            <div class="count">0</div>
+            <div class="label">Transports</div>
+        </div>
+        
+        <div class="stat-summary">
+            <div class="icon">👨‍⚕️</div>
+            <div class="count">0</div>
+            <div class="label">Médecins</div>
+        </div>
+    </div>
+
+    <!-- Filtres -->
+    <div class="history-filters">
+        <button class="filter-btn active" onclick="filterHistory('all')">
+            Tous
+        </button>
+        <button class="filter-btn" onclick="filterHistory('urgent')">
+            Urgences
+        </button>
+        <button class="filter-btn" onclick="filterHistory('transport')">
+            Transports
+        </button>
+        <button class="filter-btn" onclick="filterHistory('doctor')">
+            Médecins
+        </button>
+    </div>
+
+    <!-- Liste des demandes -->
+    <div class="history-list">
+        <div class="history-empty">
+            <div class="icon">📭</div>
+            <h3>Aucune demande trouvée</h3>
+            <p>Vos demandes apparaîtront ici après envoi</p>
+        </div>
+    </div>
+</div>
+
+        <!-- Section Profil -->
+        <div id="profile" class="dashboard-section" style="display: none">
+            <div class="profile-header">
+                <div class="profile-avatar" onclick="changeProfilePicture()">
+                    <span>👤</span>
+                </div>
+                <div class="profile-info-header">
+                    <h2 id="profileName">Mohamed Ali</h2>
+                    <p class="profile-email" id="profileEmail">
+                        <span>✉️</span> mohamed.ali@email.com
+                    </p>
+                    <p class="profile-member-since">
+                        <span>📅</span> Membre depuis le 15 Février 2024
+                    </p>
+                    <div class="profile-badge">
+                        <span class="badge">⭐ Client Fidèle</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Informations Personnelles -->
+            <div class="profile-info">
+                <h3><span>📋</span> Informations Personnelles</h3>
+                <div class="info-item">
+                    <span class="info-label">  Nom complet : </span>
+                    <span id="profileNameDisplay" class="info-value">Chargement...</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">  Téléphone : </span>
+                    <span id="profilePhone" class="info-value">Chargement...</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">  Adresse : </span>
+                    <span id="profileAddress" class="info-value">Chargement...</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">  ID Client : </span>
+                    <span id="profileClientId" class="info-value">Génération...</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">  Date d'inscription : </span>
+                    <span id="profileJoinDate" class="info-value">Chargement...</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">  Dernière connexion : </span>
+                    <span id="profileLastLogin" class="info-value">Chargement...</span>
+                </div>
+            </div>
+
+            <!-- Modifier mes informations -->
+            <div class="profile-edit">
+                <h3> Modifier mes informations</h3>
+                <form id="profileForm">
+                    <div class="form-group">
+                        <label> Nom complet</label>
+                        <input type="text" id="editName" value="Mohamed Ali" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label> Email</label>
+                        <input type="email" id="editEmail" value="mohamed.ali@email.com" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label> Téléphone</label>
+                        <input type="tel" id="editPhone" value="+212 600 000 000" />
+                    </div>
+
+                    <div class="form-group">
+                        <label> Adresse complète</label>
+                        <textarea id="editAddress" rows="3" placeholder="Votre adresse complète...">123 Rue Mohammed V, Casablanca, Maroc</textarea>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn-save">
+                             Enregistrer les modifications
+                        </button>
+                        <button type="button" class="btn-cancel" onclick="cancelEdit()">
+                             Annuler
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Paramètres du compte -->
+            <div class="account-settings">
+                <h3><span>⚙️</span> Paramètres du compte</h3>
+                <div class="settings-list">
+                    <div class="setting-item">
+                        <div class="setting-label"> Notifications SMS</div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" checked />
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <div class="setting-label"> Notifications Email</div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" checked />
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <div class="setting-label"> Alertes d'urgence</div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" checked />
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <div class="setting-label"> Langue</div>
+                        <select id="profileLanguageSelect" class="language-select" onchange="changeLanguage(this.value)">
+                            <option value="fr">Français</option>
+                            <option value="ar">العربية</option>
+                            <option value="en">English</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Zone Danger -->
+            <div class="danger-zone">
+                <h3> Zone de Danger</h3>
+                <p class="danger-warning">
+                    Ces actions sont irréversibles. Veuillez être certain avant de continuer.
+                </p>
+                <div class="danger-actions">
+                    <button class="btn-danger" onclick="changePassword()">
+                         Changer le mot de passe
+                    </button>
+                    <button class="btn-danger" onclick="exportData()">
+                         Exporter mes données
+                    </button>
+                    <button class="btn-danger" onclick="deleteAccount()">
+                         Supprimer mon compte
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section Contact -->
+        <div id="contact" class="dashboard-section" style="display: none">
+            <h2>Contact & Support</h2>
+
+            <div class="contact-methods">
+                <div class="contact-card">
+                    <div class="contact-icon">📞</div>
+                    <h3>Urgence 24/7</h3>
+                    <p class="contact-number">0522 98 76 54</p>
+                    <button class="btn-call" onclick="callEmergency()">
+                        Appeler maintenant
+                    </button>
+                </div>
+
+                <div class="contact-card">
+                    <div class="contact-icon">💬</div>
+                    <h3>WhatsApp</h3>
+                    <p class="contact-number">+212 600 000 000</p>
+                    <button class="btn-whatsapp" onclick="openWhatsApp()">
+                        Ouvrir WhatsApp
+                    </button>
+                </div>
+
+                <div class="contact-card">
+                    <div class="contact-icon">📧</div>
+                    <h3>Email</h3>
+                    <p>support@alloambulance.ma</p>
+                    <button class="btn-email" onclick="sendEmail()">
+                        Envoyer un email
+                    </button>
+                </div>
+            </div>
+
+            <div class="contact-form-section">
+                <h3>Envoyer un message</h3>
+                <form id="contactForm">
+                    <div class="form-group">
+                        <label>Sujet</label>
+                        <select id="contactSubject">
+                            <option>Demande d'information</option>
+                            <option>Problème technique</option>
+                            <option>Réclamation</option>
+                            <option>Suggestion</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Message</label>
+                        <textarea id="contactMessage" rows="5" placeholder="Décrivez votre demande..."></textarea>
+                    </div>
+
+                    <button type="submit" class="btn-send">
+                        Envoyer le message
+                    </button>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <script src="js/translations.js"></script>
+    <script src="js/language.js"></script>
+    <script src="js/script.js"></script>
+</body>
+</html>
