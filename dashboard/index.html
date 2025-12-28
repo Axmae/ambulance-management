@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Ambulance Pro - Dashboard</title>
+    <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+    <div class="app">
+        <header class="topbar">
+            <button id="menuBtn" class="menu-btn">☰</button>
+            <h1 class="title">Ambulance Dashboard</h1>
+            <div class="top-controls">
+                <input type="date" id="datePicker" />
+                <div class="user">
+                    <div class="avatar">A</div>
+                    <div class="username">Admin</div>
+                </div>
+            </div>
+        </header>
+
+        <div class="layout">
+            <aside id="sidebar" class="sidebar">
+            
+                <nav class="nav">
+                    <a class="nav-link active" data-page="Dashboard">📊 Dashboard</a>
+                    <a class="nav-link" data-page="Ambulances">🚑 Ambulances</a>
+                    <a class="nav-link" data-page="Drivers">👨‍✈️ Chauffeurs</a>
+                    <a class="nav-link" data-page="Incidents">⚠️ Incidents</a>
+                    <a class="nav-link" data-page="Settings">⚙️ Paramètres</a>
+                </nav>
+            </aside>
+
+            <main class="main" id="mainContent">
+                </main>
+        </div>
+
+        <footer class="footer">
+            © <span id="year"></span> Ambulance Management System
+        </footer>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>

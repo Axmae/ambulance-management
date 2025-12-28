@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Settings</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h1>⚙️ Settings</h1>
+
+<!-- Appearance -->
+<section class="card">
+    <h3>Appearance</h3>
+
+    <div class="form-group">
+        <label>Theme Mode:</label>
+        <div class="radio-group">
+            <label>
+                <input type="radio" name="theme" value="light" checked>
+                Light Mode
+            </label>
+            <label>
+                <input type="radio" name="theme" value="dark">
+                Dark Mode
+            </label>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="language">Language:</label>
+        <select id="language">
+            <option>English</option>
+            <option>Français</option>
+            <option>العربية</option>
+        </select>
+    </div>
+</section>
+
+<!-- System Configuration -->
+<section class="card">
+    <h3>System Configuration</h3>
+
+    <div class="form-group">
+        <label for="siteName">Site Name:</label>
+        <input type="text" id="siteName" placeholder="Enter site name">
+    </div>
+
+    <div class="form-group">
+        <label for="timezone">Timezone:</label>
+        <select id="timezone">
+            <option>GMT+0</option>
+            <option>GMT+1</option>
+            <option>GMT+2</option>
+            <option>GMT+3</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>
+            <input type="checkbox" checked>
+            Enable Notifications
+        </label>
+    </div>
+</section>
+
+<!-- Privacy & Security -->
+<section class="card">
+    <h3>Privacy & Security</h3>
+
+    <div class="form-group">
+        <label>
+            <input type="checkbox" checked>
+            Two-Factor Authentication
+        </label>
+    </div>
+
+    <div class="form-group">
+        <label>
+            <input type="checkbox">
+            Allow data collection for improvements
+        </label>
+    </div>
+
+    <div class="form-group">
+        <label for="sessionTimeout">Session Timeout:</label>
+        <select id="sessionTimeout">
+            <option>15 minutes</option>
+            <option>30 minutes</option>
+            <option>1 hour</option>
+        </select>
+    </div>
+</section>
+
+<!-- Performance -->
+<section class="card">
+    <h3>Performance</h3>
+
+    <div class="form-group">
+        <label>
+            <input type="checkbox" checked>
+            Enable caching
+        </label>
+    </div>
+
+    <div class="form-group">
+        <label>
+            <input type="checkbox">
+            Reduce animations
+        </label>
+    </div>
+</section>
+
+<button class="btn">💾 Save Settings</button>
+
+</body>
+</html>

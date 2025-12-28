@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Incidents</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>⚠️ Incidents</h1>
+
+    <div style="margin-bottom:1rem">
+        <input id="incSearch" placeholder="Search by ID / Type / Status" />
+        <select id="incFilter">
+            <option value="">All status</option>
+            <option value="open">Open</option>
+            <option value="in-progress">In Progress</option>
+            <option value="resolved">Resolved</option>
+        </select>
+    </div>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Type</th>
+                <th>Status</th>
+                <th>Reported By</th>
+                <th>Date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="incTable">
+            <tr>
+                <td>INC-001</td>
+                <td>Accident</td>
+                <td>Open</td>
+                <td>Youssef</td>
+                <td>12/16/2025</td>
+                <td>
+                    <button class="btn">View</button>
+                    <button class="btn" style="background:#0ea5a4">Resolve</button>
+                </td>
+            </tr>
+            <tr>
+                <td>INC-002</td>
+                <td>Fire</td>
+                <td>In Progress</td>
+                <td>Fatima</td>
+                <td>12/15/2025</td>
+                <td>
+                    <button class="btn">View</button>
+                    <button class="btn" style="background:#0ea5a4">Resolve</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>
